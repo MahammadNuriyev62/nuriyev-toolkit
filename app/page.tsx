@@ -48,7 +48,7 @@ export default function Home() {
         const data = await response.json();
         setDataset(data);
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError("Error loading dataset. Please try again.");
         setLoading(false);
       }
@@ -113,7 +113,7 @@ export default function Home() {
 
       // Move to next item (number is index+1)
       router.push(`?number=${currentNumber + 2}`);
-    } catch (err) {
+    } catch {
       setError("Error submitting label. Please try again.");
     } finally {
       setSubmitting(false);
