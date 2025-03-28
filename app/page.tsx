@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import MarkdownDisplay from "./components/MarkdownDisplay";
-
+import { Suspense } from "react";
 interface DatasetItem {
   id: string;
   input: string;
@@ -17,7 +17,7 @@ interface ScoreState {
   clarity: number | null;
 }
 
-export default function Home() {
+function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [dataset, setDataset] = useState<DatasetItem[]>([]);
@@ -320,5 +320,13 @@ export default function Home() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function HomeWithSuspense() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </Suspense>
   );
 }
