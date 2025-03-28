@@ -31,11 +31,12 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get current number from URL (number is index+1)
+  // Get current number and labeler from URL
   const numberParam = searchParams.get("number");
   const currentNumber = numberParam
     ? Math.max(0, parseInt(numberParam, 10) - 1)
     : 0;
+  const labeler = searchParams.get("labeler") || "anonymous";
 
   // Load dataset
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function Home() {
           medical_accuracy: scores.medical_accuracy,
           helpfulness: scores.helpfulness,
           clarity: scores.clarity,
+          labeler: labeler,
         }),
       });
 
@@ -111,8 +113,10 @@ export default function Home() {
         throw new Error("Failed to submit label");
       }
 
-      // Move to next item (number is index+1)
-      router.push(`?number=${currentNumber + 2}`);
+      // Move to next item (number is index+1), preserve labeler parameter
+      router.push(
+        `?number=${currentNumber + 2}&labeler=${encodeURIComponent(labeler)}`
+      );
     } catch {
       setError("Error submitting label. Please try again.");
     } finally {
@@ -153,7 +157,7 @@ export default function Home() {
           <p className="text-lg text-gray-700">
             No item found at index {currentNumber} (number {currentNumber + 1}).
           </p>
-          <Link href="?number=1">
+          <Link href={`?number=1&labeler=${encodeURIComponent(labeler)}`}>
             <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
               Start from beginning
             </button>
@@ -169,9 +173,14 @@ export default function Home() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 text-white">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-semibold">
-              Nuriyev Toolkit: RLHF Labeling
-            </h1>
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold">
+                Nuriyev Toolkit: RLHF Labeling
+              </h1>
+              <span className="ml-4 bg-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                Labeler: {labeler}
+              </span>
+            </div>
             <div className="text-sm font-medium">
               Item: {currentNumber + 1} / {dataset.length}
             </div>
@@ -288,12 +297,21 @@ export default function Home() {
 
           {/* Navigation */}
           <div className="flex justify-between text-sm pt-2">
-            <Link href={`?number=${Math.max(1, currentNumber)}`}>
+            <Link
+              href={`?number=${Math.max(
+                1,
+                currentNumber
+              )}&labeler=${encodeURIComponent(labeler)}`}
+            >
               <button className="text-blue-600 hover:text-blue-800">
                 ← Previous
               </button>
             </Link>
-            <Link href={`?number=${currentNumber + 2}`}>
+            <Link
+              href={`?number=${currentNumber + 2}&labeler=${encodeURIComponent(
+                labeler
+              )}`}
+            >
               <button className="text-blue-600 hover:text-blue-800">
                 Skip →
               </button>

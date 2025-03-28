@@ -7,7 +7,15 @@ export async function POST(request: NextRequest) {
     const rlhfLabels = db.collection("rlhf-labels");
 
     const body = await request.json();
-    const { id, input, output, medical_accuracy, helpfulness, clarity } = body;
+    const {
+      id,
+      input,
+      output,
+      medical_accuracy,
+      helpfulness,
+      clarity,
+      labeler,
+    } = body;
 
     // Validate inputs
     if (
@@ -27,6 +35,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
+    // Default labeler to 'anonymous' if not provided
+    const labelerValue = labeler || "anonymous";
+
     // Insert the label into the database
     await rlhfLabels.insertOne({
       id,
@@ -35,6 +46,7 @@ export async function POST(request: NextRequest) {
       medical_accuracy,
       helpfulness,
       clarity,
+      labeler: labelerValue,
       timestamp: new Date(),
     });
 
